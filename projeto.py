@@ -23,7 +23,7 @@ def imprimirFaturamento(faturamento):
     print("------------------------------------------------FATURAMENTO------------------------------------------------")
     for mercadoria, quantidade in vendas.items():  # Percorre as mercadorias vendidas
         preco = precoMercadorias.get(int(mercadoria), 0)  # Obtém o preço da mercadoria ou 0 se não existir
-        subtotal = quantidade * preco  # Calcula o subtotal
+        subtotal = quantidade * preco  # Calcula o subtotal 
         print(f"Mercadoria {mercadoria}: {quantidade} unidades vendidas a R${preco:.2f} cada (Total: R${subtotal:.2f})")
     print(f"Faturamento Total: R${faturamento:.2f}")
     print("-----------------------------------------------------------------------------------------------------------")
