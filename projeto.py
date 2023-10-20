@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 precoMercadorias = {}
 vendas = {}
 
+
 def lerPrecos():
     while True:
         try:
@@ -13,25 +14,28 @@ def lerPrecos():
             if adicionarPrecos != 's':
                 break
         except ValueError:
-            print("Entrada inválida. Por favor, insira números válidos para o número da mercadoria e o preço.")
+            print("Entrada inválida. insira números válidos para o número da mercadoria e o preço.")
 
-def calcularFaturamento(vendas):
+
+def calcularFaturamento(vendas, precoMercadorias):
     faturamento = 0
     for mercadoria, quantidade in vendas.items():
-        preco = precoMercadorias.get(int(mercadoria), 0)
+        preco = precoMercadorias.get(mercadoria, 0)
         faturamento += quantidade * preco
     return faturamento
 
-def imprimirFaturamento(faturamento):
+
+def imprimirFaturamento(faturamento, vendas, precoMercadorias):
     print("------------------------------------------------FATURAMENTO------------------------------------------------")
     for mercadoria, quantidade in vendas.items():
-        preco = precoMercadorias.get(int(mercadoria), 0)
+        preco = precoMercadorias.get(mercadoria, 0)
         subtotal = quantidade * preco
         print(f"Mercadoria {mercadoria}: {quantidade} unidades vendidas a R${preco:.2f} cada (Total: R${subtotal:.2f})")
     print(f"Faturamento Total: R${faturamento:.2f}")
     print("-----------------------------------------------------------------------------------------------------------")
 
-def calcularPercentual(faturamento):
+
+def calcularPercentual(faturamento, vendas, precoMercadorias):
     percentuais = {}
     for mercadoria, quantidade in vendas.items():
         preco = precoMercadorias.get(mercadoria, 0)
@@ -40,15 +44,19 @@ def calcularPercentual(faturamento):
         percentuais[mercadoria] = percentual
     return percentuais
 
+
 def imprimirPercentuais(percentuais):
     print("Percentuais de vendas por mercadoria sobre o total faturado:")
     for mercadoria, percentual in percentuais.items():
         print(f"Mercadoria {mercadoria}: {percentual:.2f}%")
 
+
 def lerMercadorias():
     faturamento = 0
     try:
-        mercadoriasCalculo = input("Digite os números das mercadorias para o cálculo do faturamento (separados por espaço): ").split()
+        mercadoriasCalculo = input(
+            "Digite os números das mercadorias para o cálculo do faturamento (separados por espaço): ").split()
+        mercadoriasCalculo = [int(m) for m in mercadoriasCalculo]  # converter strings em inteiros
         for mercadoria in mercadoriasCalculo:
             quantidade = int(input(f"Digite a quantidade vendida da mercadoria {mercadoria}: "))
             vendas[mercadoria] = quantidade
@@ -59,6 +67,7 @@ def lerMercadorias():
         print("Entrada inválida. Por favor, insira números válidos.")
     return faturamento
 
+
 def salvarDados(nome_arquivo):
     try:
         with open(nome_arquivo, 'w') as arquivo:
@@ -66,8 +75,10 @@ def salvarDados(nome_arquivo):
             for mercadoria, quantidade in vendas.items():
                 preco = precoMercadorias.get(mercadoria, 0)
                 arquivo.write(f"{mercadoria}\t{quantidade}\t{preco:.2f}\n")
+            print(f"Os dados foram salvos no arquivo {nome_arquivo}.")
     except Exception as e:
         print(f"Erro ao salvar dados: {str(e)}")
+
 
 def grafico():
     mercadorias_ordenadas = sorted(vendas.items(), key=lambda x: x[1], reverse=True)
@@ -82,44 +93,54 @@ def grafico():
     plt.tight_layout()
     plt.show()
 
+
 def menu():
     faturamento = 0
     while True:
         print("===================MENU===================")
         print("|    1 - Adicionar preços                |")
-        print("|    2 - Calcular faturamento            |")
-        print("|    3 - Mostrar faturamento             |")
-        print("|    4 - Percentual de vendas            |")
-        print("|    5 - Mostrar gráfico de vendas       |")
-        print("|    6 - Sair do programa                |")
+        print("|    2 - Ler mercadorias vendidas        |")
+        print("|    3 - Calcular faturamento            |")
+        print("|    4 - Mostrar faturamento             |")
+        print("|    5 - Percentual de vendas            |")
+        print("|    6 - Mostrar gráfico de vendas       |")
+        print("|    7 - Sair do programa                |")
         print("==========================================")
         opcao = input("Digite uma opção: ")
 
         if opcao == '1':
             lerPrecos()
         elif opcao == '2':
-            faturamento = calcularFaturamento(vendas)
-            print("Cálculo de faturamento concluído.")
+            faturamento = lerMercadorias()  # chama a função lerMercadorias() e armazena o faturamento retornado
+            print("Leitura de mercadorias concluída.")
         elif opcao == '3':
-            imprimirFaturamento(faturamento)
+            if faturamento > 0:  # verifica se a leitura de mercadorias foi feita antes de calcular o faturamento
+                faturamento = calcularFaturamento(vendas, precoMercadorias)
+                print("Cálculo de faturamento concluído.")
+            else:
+                print("Antes de calcular o faturamento, você precisa ler as mercadorias vendidas.")
         elif opcao == '4':
+            imprimirFaturamento(faturamento, vendas, precoMercadorias)
+        elif opcao == '5':
             if faturamento > 0:
-                percentuais = calcularPercentual(faturamento)
+                percentuais = calcularPercentual(faturamento, vendas, precoMercadorias)
                 imprimirPercentuais(percentuais)
             else:
                 print("Antes de calcular o percentual, você precisa calcular o faturamento.")
-        elif opcao == '5':
-            grafico()
         elif opcao == '6':
+            grafico()
+        elif opcao == '7':
             print("Saindo do programa...")
             break
         else:
             print("Opção inválida. Tente novamente.")
 
+
 def main():
     menu()
     nome_arquivo = "dados_vendas.txt"
     salvarDados(nome_arquivo)
+
 
 if __name__ == "__main__":
     main()
