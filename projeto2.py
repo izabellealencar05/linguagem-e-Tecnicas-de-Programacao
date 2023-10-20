@@ -1,6 +1,4 @@
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 
 class Funcionario:
     def __init__(self, nome, cargo, salario, horas_trabalhadas):
@@ -32,14 +30,15 @@ def cadastro(funcionarios):
             break
 
 def exibir_cadastro(funcionarios):
-    print("CADASTRO DE FUNCIONÁRIOS")
+    print("\nCADASTRO DE FUNCIONÁRIOS")
     for f in funcionarios:
         print(f"Nome: {f.nome}")
         print(f"Cargo: {f.cargo}")
         print(f"Salário: {f.salario}")
         print(f"Horas Trabalhadas: {f.horas_trabalhadas}")
+        print("")
 
-def relatorio(funcionarios):
+def calcular_folha_pagamento(funcionarios):
     total_desconto_ir = 0
     total_salario_bruto = 0
     total_salario_liquido = 0
@@ -61,58 +60,48 @@ def relatorio(funcionarios):
         total_salario_bruto += salario_bruto
         total_salario_liquido += salario_liquido
 
+    df = pd.DataFrame(data)
+
     print("\nRELATÓRIO")
-    print("1 - Relatório Geral")
-    for i, f in enumerate(funcionarios):
-        print(f"{i + 2} - {f.nome}")
-    escolha = input("Escolha uma opção: ")
+    print(df)
+    print("\nTotal de Desconto de IR: R${:.2f}".format(total_desconto_ir))
+    print("Total de Salário Bruto: R${:.2f}".format(total_salario_bruto))
+    print("Total de Salário Líquido: R${:.2f}".format(total_salario_liquido))
 
-    if escolha == "1":
-        df = pd.DataFrame(data)
-        print(df)
-    elif escolha.isnumeric() and 2 <= int(escolha) <= len(funcionarios) + 1:
-        i = int(escolha) - 2
-        nome_funcionario = funcionarios[i].nome
-        data_funcionario = {
-            "Nome": [data["Nome"][i]],
-            "Cargo": [data["Cargo"][i]],
-            "Salário Bruto": [data["Salário Bruto"][i]],
-            "Desconto IR": [data["Desconto IR"][i]],
-            "Salário Líquido": [data["Salário Líquido"][i]],
-        }
-        df = pd.DataFrame(data_funcionario)
-        print(f"relatorio de {nome_funcionario}")
-        print(df)
-    else:
-        print("Opção inválida.")
+def salvar_folha_pagamento(funcionarios, arquivo):
+    data = {"Nome": [], "Cargo": [], "Salário": [], "Horas Trabalhadas": []}
 
-    print(f"Total de Desconto de IR: R${total_desconto_ir:.2f}")
-    print(f"Total de Salário Bruto: R${total_salario_bruto:.2f}")
-    print(f"Total de Salário Líquido: R${total_salario_liquido:.2f}")
+    for f in funcionarios:
+        data["Nome"].append(f.nome)
+        data["Cargo"].append(f.cargo)
+        data["Salário"].append(f.salario)
+        data["Horas Trabalhadas"].append(f.horas_trabalhadas)
 
-    criar_grafico(data) 
+    df = pd.DataFrame(data)
+    df.to_csv(arquivo, index=False)
 
-def criar_grafico(data):
-    plt.figure(figsize=(10, 6))
-    plt.bar(data["Nome"], data["Salário Bruto"], label="Salário Bruto", color="blue")
-    plt.bar(data["Nome"], data["Desconto IR"], label="Desconto IR", color="red", bottom=data["Salário Bruto"])
-    plt.xlabel('Funcionários')
-    plt.ylabel('Valores em R$')
-    plt.title('Gráfico de Salário Bruto e Desconto de IR')
-    plt.legend()
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    plt.show()
+def carregar_folha_pagamento(arquivo):
+    try:
+        df = pd.read_csv(arquivo)
+        funcionarios = []
+        for _, row in df.iterrows():
+            funcionario = Funcionario(row["Nome"], row["Cargo"], row["Salário"], row["Horas Trabalhadas"])
+            funcionarios.append(funcionario)
+        return funcionarios
+    except FileNotFoundError:
+        return []
 
 def menu():
     funcionarios = []
+    nome_arquivo = "folha_pagamento.csv"
+    funcionarios = carregar_folha_pagamento(nome_arquivo)
 
     while True:
         print("=====================MENU======================")
         print("|    1 - Adicionar funcionário                |")
         print("|    2 - Exibir cadastro de funcionários      |")
         print("|    3 - Calcular descontos e gerar relatório |")
-        print("|    4 - Gráfico Geral                        |")
+        print("|    4 - Salvar folha de pagamento            |")
         print("|    5 - Sair                                 |")
         print("===============================================")
 
@@ -123,10 +112,12 @@ def menu():
         elif opcao == "2":
             exibir_cadastro(funcionarios)
         elif opcao == "3":
-            relatorio(funcionarios)
+            calcular_folha_pagamento(funcionarios)
         elif opcao == "4":
-            criar_grafico(data)
+            salvar_folha_pagamento(funcionarios, nome_arquivo)
+            print("Folha de pagamento salva com sucesso.")
         elif opcao == '5':
+            print("Saindo do programa...")
             break
         else:
             print("Opção inválida. Tente novamente.")
