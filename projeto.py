@@ -1,36 +1,40 @@
 import matplotlib.pyplot as plt
 
-precoMercadorias = {}  # Dicionário criado para armazenar os preços das mercadorias
-vendas = {}  # Dicionário criado para armazenar as quantidades vendidas de mercadorias
+precoMercadorias = {}
+vendas = {}
 
 def lerPrecos():
-    while True:  # Loop infinito para ler os preços das mercadorias
-        mercadoria = int(input("Digite o número da mercadoria: "))  # Solicita o número da mercadoria
-        preco = float(input(f"Digite o preço da mercadoria {mercadoria}: "))  # Solicita o preço da mercadoria
-        precoMercadorias[mercadoria] = preco  # Armazena o preço no dicionário
-        adicionarPrecos = input("Deseja adicionar mais preços? (S/N): ").strip().lower()  # Pergunta se deseja adicionar mais preços
-        if adicionarPrecos != 's':
-            break  # Sai do loop se a resposta não for 's'
+    while True:
+        try:
+            mercadoria = int(input("Digite o número da mercadoria: "))
+            preco = float(input(f"Digite o preço da mercadoria {mercadoria}: "))
+            precoMercadorias[mercadoria] = preco
+            adicionarPrecos = input("Deseja adicionar mais preços? (S/N): ").strip().lower()
+            if adicionarPrecos != 's':
+                break
+        except ValueError:
+            print("Entrada inválida. Por favor, insira números válidos para o número da mercadoria e o preço.")
 
 def calcularFaturamento(vendas):
-    faturamento = 0  # Inicializa a variável Faturamento como 0
-    for mercadoria, quantidade in vendas.items():  # Percorre as mercadorias vendidas
-        preco = precoMercadorias.get(int(mercadoria), 0)  # Obtém o preço da mercadoria ou 0 se não existir
-        faturamento += quantidade * preco  # Calcula o faturamento
-    return faturamento  # Retorna o valor do faturamento
+    faturamento = 0
+    for mercadoria, quantidade in vendas.items():
+        preco = precoMercadorias.get(int(mercadoria), 0)
+        faturamento += quantidade * preco
+    return faturamento
 
 def imprimirFaturamento(faturamento):
     print("------------------------------------------------FATURAMENTO------------------------------------------------")
-    for mercadoria, quantidade in vendas.items():  # Percorre as mercadorias vendidas
-        preco = precoMercadorias.get(int(mercadoria), 0)  # Obtém o preço da mercadoria ou 0 se não existir
-        subtotal = quantidade * preco  # Calcula o subtotal 
+    for mercadoria, quantidade in vendas.items():
+        preco = precoMercadorias.get(int(mercadoria), 0)
+        subtotal = quantidade * preco
         print(f"Mercadoria {mercadoria}: {quantidade} unidades vendidas a R${preco:.2f} cada (Total: R${subtotal:.2f})")
     print(f"Faturamento Total: R${faturamento:.2f}")
     print("-----------------------------------------------------------------------------------------------------------")
+
 def calcularPercentual(faturamento):
     percentuais = {}
     for mercadoria, quantidade in vendas.items():
-        preco = precoMercadorias.get(int(mercadoria), 0)
+        preco = precoMercadorias.get(mercadoria, 0)
         subtotal = quantidade * preco
         percentual = (subtotal / faturamento) * 100
         percentuais[mercadoria] = percentual
@@ -42,17 +46,28 @@ def imprimirPercentuais(percentuais):
         print(f"Mercadoria {mercadoria}: {percentual:.2f}%")
 
 def lerMercadorias():
-    mercadoriasCalculo = input("Digite os números das mercadorias para o cálculo do faturamento (separados por espaço): ").split()
-    for mercadoria in mercadoriasCalculo:  # Percorre as mercadorias informadas
-        quantidade = int(input(f"Digite a quantidade vendida da mercadoria {mercadoria}: "))  # Solicita a quantidade vendida
-        vendas[mercadoria] = quantidade  # Armazena a quantidade vendida no dicionário de vendas
+    faturamento = 0
+    try:
+        mercadoriasCalculo = input("Digite os números das mercadorias para o cálculo do faturamento (separados por espaço): ").split()
+        for mercadoria in mercadoriasCalculo:
+            quantidade = int(input(f"Digite a quantidade vendida da mercadoria {mercadoria}: "))
+            vendas[mercadoria] = quantidade
+            preco = precoMercadorias.get(mercadoria, 0)
+            subtotal = quantidade * preco
+            faturamento += subtotal
+    except ValueError:
+        print("Entrada inválida. Por favor, insira números válidos.")
+    return faturamento
 
 def salvarDados(nome_arquivo):
-    with open(nome_arquivo, 'w') as arquivo:
-        arquivo.write("Mercadoria\tQuantidade\tPreço\n")
-        for mercadoria, quantidade in vendas.items():
-            preco = precoMercadorias.get(mercadoria, 0)
-            arquivo.write(f"{mercadoria}\t{quantidade}\t{preco}\n")
+    try:
+        with open(nome_arquivo, 'w') as arquivo:
+            arquivo.write("Mercadoria\tQuantidade\tPreço\n")
+            for mercadoria, quantidade in vendas.items():
+                preco = precoMercadorias.get(mercadoria, 0)
+                arquivo.write(f"{mercadoria}\t{quantidade}\t{preco:.2f}\n")
+    except Exception as e:
+        print(f"Erro ao salvar dados: {str(e)}")
 
 def grafico():
     mercadorias_ordenadas = sorted(vendas.items(), key=lambda x: x[1], reverse=True)
@@ -66,29 +81,33 @@ def grafico():
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.show()
+
 def menu():
-    print("===================MENU===================")
-    print("|    1 - adicionar preço                 |")
-    print("|    2 - fazer o calculo do faturamento  |")
-    print("|    3 - mostrar o faturamento           |")
-    print("|    4 - percentual de vendas            |")
-    print("|    5 - mostrar o grafico de vendas     |")
-    print("|    6 - sair do programa                |")
-    print("==========================================")
-    faturamento = 0  # Inicializa faturamento como 0
+    faturamento = 0
     while True:
+        print("===================MENU===================")
+        print("|    1 - Adicionar preços                |")
+        print("|    2 - Calcular faturamento            |")
+        print("|    3 - Mostrar faturamento             |")
+        print("|    4 - Percentual de vendas            |")
+        print("|    5 - Mostrar gráfico de vendas       |")
+        print("|    6 - Sair do programa                |")
+        print("==========================================")
         opcao = input("Digite uma opção: ")
 
         if opcao == '1':
             lerPrecos()
         elif opcao == '2':
-            lerMercadorias()
             faturamento = calcularFaturamento(vendas)
-        elif opcao  == '3':
+            print("Cálculo de faturamento concluído.")
+        elif opcao == '3':
             imprimirFaturamento(faturamento)
         elif opcao == '4':
-            percentuais = calcularPercentual(faturamento)
-            imprimirPercentuais(percentuais)
+            if faturamento > 0:
+                percentuais = calcularPercentual(faturamento)
+                imprimirPercentuais(percentuais)
+            else:
+                print("Antes de calcular o percentual, você precisa calcular o faturamento.")
         elif opcao == '5':
             grafico()
         elif opcao == '6':
@@ -96,12 +115,11 @@ def menu():
             break
         else:
             print("Opção inválida. Tente novamente.")
+
 def main():
     menu()
     nome_arquivo = "dados_vendas.txt"
     salvarDados(nome_arquivo)
-    grafico()
-
 
 if __name__ == "__main__":
-    main() 
+    main()
