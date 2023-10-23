@@ -30,14 +30,16 @@ def cadastro(funcionarios):
             break
 
 def exibir_cadastro(funcionarios):
-    print("\nCADASTRO DE FUNCIONÁRIOS")
-    for f in funcionarios:
-        print(f"Nome: {f.nome}")
-        print(f"Cargo: {f.cargo}")
-        print(f"Salário: {f.salario}")
-        print(f"Horas Trabalhadas: {f.horas_trabalhadas}")
-        print("")
-
+    if not funcionarios:
+        print("Nenhum funcionário cadastrado.")
+    else:
+        print("\nCADASTRO DE FUNCIONÁRIOS")
+        for f in funcionarios:
+            print(f"Nome: {f.nome}")
+            print(f"Cargo: {f.cargo}")
+            print(f"Salário: {f.salario}")
+            print(f"Horas Trabalhadas: {f.horas_trabalhadas}")
+            print("")
 def calcular_folha_pagamento(funcionarios):
     total_desconto_ir = 0
     total_salario_bruto = 0
@@ -91,8 +93,9 @@ def carregar_folha_pagamento(arquivo):
     except FileNotFoundError:
         return []
 
+cadastro_efetuado = False  # Variável para controlar se o cadastro foi exibido
+
 def menu():
-    funcionarios = []
     nome_arquivo = "folha_pagamento.csv"
     funcionarios = carregar_folha_pagamento(nome_arquivo)
 
@@ -109,10 +112,17 @@ def menu():
 
         if opcao == "1":
             cadastro(funcionarios)
+            cadastro_efetuado = True  # Cadastro foi efetuado
         elif opcao == "2":
-            exibir_cadastro(funcionarios)
+            if not cadastro_efetuado:
+                print("Nenhum funcionário cadastrado.")
+            else:
+                exibir_cadastro(funcionarios)
         elif opcao == "3":
-            calcular_folha_pagamento(funcionarios)
+            if not funcionarios:
+                print("Nenhum funcionário cadastrado.")
+            else:
+                calcular_folha_pagamento(funcionarios)
         elif opcao == "4":
             salvar_folha_pagamento(funcionarios, nome_arquivo)
             print("Folha de pagamento salva com sucesso.")
