@@ -100,11 +100,10 @@ def menu():
         print("===================MENU===================")
         print("|    1 - Adicionar preços                |")
         print("|    2 - Ler mercadorias vendidas        |")
-        print("|    3 - Calcular faturamento            |")
-        print("|    4 - Mostrar faturamento             |")
-        print("|    5 - Percentual de vendas            |")
-        print("|    6 - Mostrar gráfico de vendas       |")
-        print("|    7 - Sair do programa                |")
+        print("|    3 - Mostrar faturamento             |")
+        print("|    4 - Percentual de vendas            |")
+        print("|    5 - Mostrar gráfico de vendas       |")
+        print("|    6 - Sair do programa                |")
         print("==========================================")
         opcao = input("Digite uma opção: ")
 
@@ -119,17 +118,16 @@ def menu():
                 print("Cálculo de faturamento concluído.")
             else:
                 print("Antes de calcular o faturamento, você precisa ler as mercadorias vendidas.")
-        elif opcao == '4':
             imprimirFaturamento(faturamento, vendas, precoMercadorias)
-        elif opcao == '5':
+        elif opcao == '4':
             if faturamento > 0:
                 percentuais = calcularPercentual(faturamento, vendas, precoMercadorias)
                 imprimirPercentuais(percentuais)
             else:
                 print("Antes de calcular o percentual, você precisa calcular o faturamento.")
-        elif opcao == '6':
+        elif opcao == '5':
             grafico()
-        elif opcao == '7':
+        elif opcao == '6':
             print("Saindo do programa...")
             break
         else:
