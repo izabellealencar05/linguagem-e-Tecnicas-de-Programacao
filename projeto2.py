@@ -93,7 +93,7 @@ def carregar_folha_pagamento(arquivo):
     except FileNotFoundError:
         return []
 
-cadastro_efetuado = False  # Variável para controlar se o cadastro foi exibido
+cadastro_efetuado = False  
 
 def menu():
     nome_arquivo = "folha_pagamento.csv"
@@ -112,7 +112,7 @@ def menu():
 
         if opcao == "1":
             cadastro(funcionarios)
-            cadastro_efetuado = True  # Cadastro foi efetuado
+            cadastro_efetuado = True 
         elif opcao == "2":
             if not cadastro_efetuado:
                 print("Nenhum funcionário cadastrado.")
