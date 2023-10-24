@@ -110,10 +110,10 @@ def menu():
         if opcao == '1':
             lerPrecos()
         elif opcao == '2':
-            faturamento = lerMercadorias()  # chama a função lerMercadorias() e armazena o faturamento retornado
+            faturamento = lerMercadorias() 
             print("Leitura de mercadorias concluída.")
         elif opcao == '3':
-            if faturamento > 0:  # verifica se a leitura de mercadorias foi feita antes de calcular o faturamento
+            if faturamento > 0:  
                 faturamento = calcularFaturamento(vendas, precoMercadorias)
                 print("Cálculo de faturamento concluído.")
             else:
