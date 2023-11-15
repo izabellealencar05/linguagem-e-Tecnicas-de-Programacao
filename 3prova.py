@@ -4,9 +4,6 @@ class Cliente:
         self.sobrenome = sobrenome
         self.cpf = cpf
 
-
-
-
     def grava(self):
         gravar = input("Deseja salvar os dados no arquivo 'cliente.txt' (s/n)? ")
         if gravar.lower() == 's': #transformar para minuscula
