@@ -19,6 +19,7 @@ class Conta:
             self.saldo += valor
             self.historico.append(f'Depósito: +{valor}')
             self.cliente.saldo = self.saldo  # Atualizar o saldo do cliente
+            Historico().atualizar_saldo_antigo(self.saldo)  # Atualizar o saldo antigo no histórico
         else:
             print("Operação não permitida. Limite de saldo excedido.")
 
@@ -29,15 +30,6 @@ class Conta:
             self.cliente.saldo = self.saldo  # Atualizar o saldo do cliente
         else:
             print("Operação não permitida. Limite de saque excedido.")
-
-    def transferir(self, destino, valor):
-        if self.saldo - valor >= -self.limite and destino.saldo + valor <= destino.limite:
-            self.saldo -= valor
-            destino.depositar(valor)
-            self.historico.append(f'Transferência para Conta {destino.numero}: -{valor}')
-            self.cliente.saldo = self.saldo  # Atualizar o saldo do cliente
-        else:
-            print("Operação não permitida. Limite de saque ou limite da conta de destino excedido.")
 
 class Historico:
     def __init__(self):
@@ -100,7 +92,6 @@ def cadastrar_conta():
     conta = Conta(cliente, numero_conta, saldo, limite=limite_conta)
     return conta
 
-# Exemplo de uso com menu de opções
 contas = []
 
 while True:
@@ -127,7 +118,6 @@ while True:
             print("Valor depositado com sucesso!")
         else:
             print("Conta não encontrada.")
-
     elif opcao == "3" and contas:
         numero_conta = int(input("Digite o número da conta para saque: "))
         valor = float(input("Digite o valor a ser sacado: "))
