@@ -1,10 +1,12 @@
 import csv
 
+
 class Cliente:
     def __init__(self, nome, cpf, saldo=0):
         self.nome = nome
         self.cpf = cpf
         self.saldo = saldo
+
 
 class Conta:
     def __init__(self, cliente, numero, saldo=0, limite=0):
@@ -35,6 +37,8 @@ class Conta:
             print("Valor sacado com sucesso!")
         else:
             print("Erro! Limite de saque excedido.")
+
+
 class Historico:
     def __init__(self):
         self.transacoes = []
@@ -71,38 +75,15 @@ class Historico:
         with open(nome_arquivo, 'w') as arquivo:
             arquivo.write(conteudo)
 
+
 def imprimir_historico(conta):
     print(f"\nHistórico da Conta {conta.numero}:")
-    for transacao in conta.historico:
-        print(transacao)
-
-    # Salvar em arquivo
     nome_arquivo = f"extrato_conta_{conta.numero}.csv"
     conteudo = f"Saldo Atual: {conta.saldo}\n\nHistórico da Conta {conta.numero}:\n"
     conteudo += '\n'.join(conta.historico)
     Historico().salvar_em_arquivo(nome_arquivo, conteudo)  # Ajuste aqui
     print(f"\nDados salvos em {nome_arquivo}")
 
-
-def imprimir_informacoes(cliente, conta):
-    print("\nInformações do Cliente:")
-    print(f"Nome: {cliente.nome}, CPF: {cliente.cpf}, Saldo Atual: {cliente.saldo}")
-
-    print("\nInformações da Conta:")
-    print(f"Número da conta: {conta.numero}, Saldo: {conta.saldo}, Limite: {conta.limite}")
-    print(f"Total Depositado: {conta.total_depositado}")
-    print(f"Total Sacado: {conta.total_sacado}")
-
-    saldo_antigo = conta.saldo - Historico().transacoes[-1] if Historico().transacoes else 0
-    print(f"Saldo Antigo: {saldo_antigo}")
-
-    nome_arquivo = f"informacoes_conta_{conta.numero}.csv"
-    conteudo = f"Informações do Cliente:\nNome: {cliente.nome}, CPF: {cliente.cpf}, Saldo Atual: {cliente.saldo}\n"
-    conteudo += f"Informações da Conta:\nNúmero da Conta: {conta.numero}, Saldo: {conta.saldo}, Limite: {conta.limite}\n"
-    conteudo += f"Total Depositado: {conta.total_depositado}\nTotal Sacado: {conta.total_sacado}\n"
-    conteudo += f"Saldo Antigo: {conta.saldo}"
-    Historico().salvar_em_arquivo(nome_arquivo, conteudo)
-    print(f"\nInformações salvas em {nome_arquivo}")
 
 def cadastrar_conta():
     nome = input("Digite o nome do cliente: ")
@@ -114,13 +95,33 @@ def cadastrar_conta():
     conta = Conta(cliente, numero_conta, saldo, limite=limite_conta)
     return conta
 
+
+def imprimir_informacoes(cliente, conta):
+    print("\nInformações do Cliente:")
+    print(f"Nome: {cliente.nome}, CPF: {cliente.cpf}, Saldo Atual: {cliente.saldo}")
+    print(f"Número da conta: {conta.numero}, Saldo: {conta.saldo}, Limite: {conta.limite}")
+    print(f"Total Depositado: {conta.total_depositado}")
+    print(f"Total Sacado: {conta.total_sacado}")
+    saldo_antigo = (conta.saldo - conta.total_depositado)
+    print(f"Saldo Antigo: {saldo_antigo}")
+
+    nome_arquivo = f"informacoes_conta_{conta.numero}.csv"
+    conteudo = f"Informações do Cliente:\nNome: {cliente.nome}, CPF: {cliente.cpf}, Saldo Atual: {cliente.saldo}\n"
+    conteudo += f"Informações da Conta:\nNúmero da Conta: {conta.numero}, Saldo: {conta.saldo}, Limite: {conta.limite}\n"
+    conteudo += f"Total Depositado: {conta.total_depositado}\nTotal Sacado: {conta.total_sacado}\n"
+    conteudo += f"Saldo Antigo: {conta.saldo}"
+    Historico().salvar_em_arquivo(nome_arquivo, conteudo)
+    print(f"\nInformações salvas em {nome_arquivo}")
+
+
 contas = []
 historico_global = Historico()
+
 
 def menu():
     while True:
         print('================MENU===============')
-        print("|  1 - Inserir dados da conta     |")
+        print("|  1 - Cadastrar conta            |")
         print("|  2 - Deposito                   |")
         print("|  3 - Saque                      |")
         print("|  4 - Imprimir dados da conta    |")
@@ -133,13 +134,16 @@ def menu():
             contas.append(conta)
             print("Dados cadastrados com sucesso!")
         elif opcao == "2" and contas:
-            numero_conta = int(input("Digite o número da conta para depósito: "))
-            valor = float(input("Digite o valor a ser depositado: "))
-            conta = next((c for c in contas if c.numero == numero_conta), None)
-            if conta:
-                conta.depositar(valor)
-            else:
-                print("Conta não encontrada.")
+            while True:
+                numero_conta = int(input("Digite o número da conta para depósito: "))
+                conta = next((c for c in contas if c.numero == numero_conta), None)
+                if conta:
+                    valor = float(input("Digite o valor a ser depositado: "))
+                    conta.depositar(valor)
+                    break
+                else:
+                    print("Conta não encontrada. Por favor, digite um número de conta válido.")
+
         elif opcao == "3" and contas:
             numero_conta = int(input("Digite o número da conta para saque: "))
             valor = float(input("Digite o valor a ser sacado: "))
@@ -154,7 +158,7 @@ def menu():
             conta = next((c for c in contas if c.numero == numero_conta), None)
             if conta:
                 imprimir_informacoes(conta.cliente, conta)
-                imprimir_historico(conta)
+
             else:
                 print("Conta não encontrada.")
         elif opcao == "5":
@@ -166,6 +170,7 @@ def menu():
 
 def main():
     menu()
+
 
 if __name__ == "__main__":
     main()
