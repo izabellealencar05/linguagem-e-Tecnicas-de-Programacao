@@ -42,23 +42,21 @@ class Conta:
 class Historico:
     def __init__(self):
         self.transacoes = []
-        self.saldo_antigo = 0
 
     def adicionar_transacao(self, transacao, novo_saldo, limite):
         self.transacoes.append({
             'transacao': transacao,
-            'saldo_antigo': self.saldo_antigo,
             'saldo_atual': novo_saldo,
             'limite': limite
         })
-        self.saldo_antigo = novo_saldo
+
 
     def __str__(self):
         return '\n'.join(str(transacao) for transacao in self.transacoes)
 
     def gerar_csv_informacoes(self, nome_arquivo, cliente, conta):
         with open(nome_arquivo, 'w', newline='') as arquivo_csv:
-            colunas = ['Nome', 'Número da Conta', 'Saldo Antigo', 'Saldo Atual', 'Limite', 'Transacao']
+            colunas = ['Nome', 'Número da Conta', 'Saldo Atual', 'Limite', 'Transacao']
             escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
 
             escritor.writeheader()
@@ -66,7 +64,6 @@ class Historico:
                 escritor.writerow({
                     'Nome': cliente.nome,
                     'Número da Conta': conta.numero,
-                    'Saldo Antigo': transacao['saldo_antigo'],
                     'Saldo Atual': transacao['saldo_atual'],
                     'Limite': transacao['limite'],
                     'Transacao': transacao['transacao']
@@ -77,13 +74,6 @@ class Historico:
             arquivo.write(conteudo)
 
 
-def imprimir_historico(conta):
-    print(f"\nHistórico da Conta {conta.numero}:")
-    nome_arquivo = f"extrato_conta_{conta.numero}.csv"
-    conteudo = f"Saldo Atual: {conta.saldo}\n\nHistórico da Conta {conta.numero}:\n"
-    conteudo += str(conta.historico)
-    conta.historico.salvar_em_arquivo(nome_arquivo, conteudo)
-    print(f"\nDados salvos em {nome_arquivo}")
 
 
 def cadastrar_conta():
@@ -107,15 +97,14 @@ def imprimir_informacoes(cliente, conta):
 def cadastrar_conta(contas):
     nome = input("Digite o nome do cliente: ")
     cpf = input("Digite o CPF do cliente: ")
-    saldo = float(input("Digite o saldo inicial do cliente: "))
     numero_conta = int(input("Digite o número da conta: "))
+    saldo = float(input("Digite o saldo inicial do cliente: "))
     limite_conta = float(input("Digite o limite da conta: "))
     cliente = Cliente(nome, cpf, saldo)
     conta = Conta(cliente, numero_conta, saldo, limite=limite_conta)
-    contas.append(conta)  # Adiciona a conta à lista global de contas
-
+    contas.append(conta)
 def gerar_arquivo_contas(contas):
-    with open("todas_contas.csv", 'w', newline='') as arquivo_csv:
+    with open("infoContas", 'w', newline='') as arquivo_csv:
         colunas = ['Nome', 'Número da Conta', 'Saldo Inicial', 'Limite']
         escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
 
@@ -185,7 +174,7 @@ while True:
         conta = next((c for c in contas if c.numero == numero_conta), None)
         if conta:
             imprimir_informacoes(conta.cliente, conta)
-            imprimir_historico(conta)
+
         else:
             print("Conta não encontrada.")
     elif opcao == "5":
