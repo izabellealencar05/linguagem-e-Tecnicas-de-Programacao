@@ -89,8 +89,10 @@ def cadastrar_conta():
 
 def imprimir_informacoes(cliente, conta):
     print("\nInformações do Cliente:")
-    print(f"Nome: {cliente.nome}, CPF: {cliente.cpf}, Saldo Inicial: {cliente.saldo}")
-    print(f"Numero da conta: {conta.numero}, Saldo: {conta.saldo}, Limite: {conta.limite}")
+    print(f"Nome: {cliente.nome}, CPF: {cliente.cpf}")
+    print(f"Numero da conta: {conta.numero}")
+    print(f"Saldo: {conta.saldo}")
+    print(f"Limite: {conta.limite}")
     print(f"Total Depositado: {conta.total_depositado}")
     print(f"Total Sacado: {conta.total_sacado}")
 
@@ -98,14 +100,14 @@ def cadastrar_conta(contas):
     nome = input("Digite o nome do cliente: ")
     cpf = input("Digite o CPF do cliente: ")
     numero_conta = int(input("Digite o número da conta: "))
-    saldo = float(input("Digite o saldo inicial do cliente: "))
+    saldo = float(input("Digite o saldo do cliente: "))
     limite_conta = float(input("Digite o limite da conta: "))
     cliente = Cliente(nome, cpf, saldo)
     conta = Conta(cliente, numero_conta, saldo, limite=limite_conta)
     contas.append(conta)
 def gerar_arquivo_contas(contas):
     with open("infoContas", 'w', newline='') as arquivo_csv:
-        colunas = ['Nome', 'Número da Conta', 'Saldo Inicial', 'Limite']
+        colunas = ['Nome', 'Número da Conta', 'Saldo', 'Limite']
         escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
 
         escritor.writeheader()
@@ -113,7 +115,7 @@ def gerar_arquivo_contas(contas):
             escritor.writerow({
                 'Nome': conta.cliente.nome,
                 'Número da Conta': conta.numero,
-                'Saldo Inicial': conta.saldo,
+                'Saldo': conta.saldo,
                 'Limite': conta.limite
             })
 
@@ -124,7 +126,7 @@ def gerar_arquivo_transacoes(contas):
 
 def imprimir_informacoes_cliente(contas):
     with open("informacoes_clientes.csv", 'w', newline='') as arquivo_csv:
-        colunas = ['Nome', 'CPF', 'Saldo Inicial']
+        colunas = ['Nome', 'CPF', 'Saldo']
         escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
 
         escritor.writeheader()
@@ -132,8 +134,9 @@ def imprimir_informacoes_cliente(contas):
             escritor.writerow({
                 'Nome': conta.cliente.nome,
                 'CPF': conta.cliente.cpf,
-                'Saldo Inicial': conta.cliente.saldo
+                'Saldo': conta.cliente.saldo
             })
+
 
 contas = []
 historico_global = Historico()
