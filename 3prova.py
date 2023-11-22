@@ -1,281 +1,198 @@
 import csv
-import os
+
 
 class Cliente:
-    def __init__(self, nome, cpf):
+    def __init__(self, nome, cpf, saldo=0):
         self.nome = nome
         self.cpf = cpf
+        self.saldo = saldo
 
-    def grava(self):
-        gravar = input("Deseja salvar os dados no arquivo 'cliente.csv' (s/n)? ")
-        if gravar.lower() == 's':
-            with open('cliente.csv', 'a', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow(["Nome", "CPF"])
-                writer.writerow([self.nome, str(self.cpf)])
-            print("Os dados foram salvos no arquivo 'cliente.csv'!")
-        elif gravar.lower() == 'n':
-            print("Os dados não foram salvos no arquivo!")
 
-    def ler(self):
-        with open("cliente.csv", 'r') as f:
-            reader = csv.reader(f)
-            for row in reader:
-                print(row)
-
-class Historico:
-    def __init__(self):
-        self.movimentos = []
-
-    def registrar_movimento(self, movimento):
-        self.movimentos.append(movimento)
-
-    def imprimir_extrato(self):
-        print("Extrato do histórico da conta:")
-        for movimento in self.movimentos:
-            print(movimento)
 class Conta:
-    def __init__(self, numero, cliente, saldo, limite):
-        self.numero = numero
+    def __init__(self, cliente, numero, saldo=0, limite=0):
         self.cliente = cliente
+        self.numero = numero
         self.saldo = saldo
         self.limite = limite
         self.historico = Historico()
+        self.total_depositado = 0
+        self.total_sacado = 0
 
-    def ler(self):
-        with open("conta.csv", 'r') as f:
-            reader = csv.reader(f)
-            for row in reader:
-                print(row)
-
-    def grava(self):
-        gravar = input("Deseja salvar os dados no arquivo 'conta.csv' (s/n)? ")
-        while True:
-            if gravar.lower() == 's':
-                with open('conta.csv', 'a', newline='') as f:
-                    writer = csv.writer(f)
-                    if os.stat('conta.csv').st_size == 0:  # Verifica se o arquivo está vazio
-                        writer.writerow(["Numero da Conta", "Nome do Cliente", "Saldo", "Limite"])
-                    # Verifica se self.cliente é None e fornece um valor padrão se for o caso
-                    nome_cliente = self.cliente.nome if self.cliente else "Cliente não associado"
-                    writer.writerow([str(self.numero), nome_cliente, str(self.saldo), str(self.limite)])
-                print("Os dados foram salvos!")
-                break
-            elif gravar.lower() == 'n':
-                print('Os dados não serão salvos!')
-                break
-            else:
-                print("Opção inválida. Tente novamente")
-                continue
-
-    def deposita(self, quantia):
-        self.saldo += quantia
-        self.historico.registrar_movimento(f"Depósito: +{quantia}")
-        self.atualizar_arquivo("Deposito", quantia)
-
-    def saca(self, quantia):
-        if self.saldo - quantia >= 0:
-            self.saldo -= quantia
-            self.historico.registrar_movimento(f"Saque: -{quantia}")
-            self.atualizar_arquivo("Saque", quantia)
-            return True  # Retorna True se o saque for bem-sucedido
+    def depositar(self, valor):
+        if self.saldo + valor <= self.limite:
+            self.saldo += valor
+            self.historico.adicionar_transacao(f'Depósito: +{valor}', self.saldo, self.limite)
+            self.cliente.saldo = self.saldo
+            self.total_depositado += valor
+            print("Valor depositado com sucesso!")
         else:
-            print("Saldo insuficiente.")
-            return False  # Retorna False se o saque não for possível
+            print("Erro! Limite de saldo é menor")
 
-    class Conta:
-        def __init__(self, numero, cliente, saldo, limite):
-            self.numero = numero
-            self.cliente = cliente
-            self.saldo = saldo
-            self.limite = limite
-            self.historico = Historico()
+    def sacar(self, valor):
+        if self.saldo - valor >= -self.limite:
+            self.saldo -= valor
+            self.historico.adicionar_transacao(f'Saque: -{valor}', self.saldo, self.limite)
+            self.cliente.saldo = self.saldo
+            self.total_sacado += valor
+            print("Valor sacado com sucesso!")
+        else:
+            print("Erro! Limite de saque excedido.")
 
-        def associa_cliente(self, cliente):
-            self.cliente = cliente
 
-        def grava(self):
-            gravar = input("Deseja salvar os dados no arquivo 'conta.csv' (s/n)? ")
-            while True:
-                if gravar.lower() == 's':
-                    with open('conta.csv', 'a', newline='') as f:
-                        writer = csv.writer(f)
-                        if os.stat('conta.csv').st_size == 0:  # Verifica se o arquivo está vazio
-                            writer.writerow(["Numero da Conta", "Nome do Cliente", "Saldo", "Limite"])
-                        # Verifica se self.cliente é None e fornece um valor padrão se for o caso
-                        nome_cliente = self.cliente.nome if self.cliente else "Cliente não associado"
-                        writer.writerow([str(self.numero), nome_cliente, str(self.saldo), str(self.limite)])
-                    print("Os dados foram salvos!")
-                    break
-                elif gravar.lower() == 'n':
-                    print('Os dados não serão salvos!')
-                    break
-                else:
-                    print("Opção inválida. Tente novamente")
-                    continue
+class Historico:
+    def __init__(self):
+        self.transacoes = []
+        self.saldo_antigo = 0
 
-        def deposita(self, quantia, conta_destino=None):
-            if conta_destino:
-                conta_destino.saldo += quantia
-                conta_destino.historico.registrar_movimento(f"Depósito recebido: +{quantia}")
-                conta_destino.atualizar_arquivo("Deposito", quantia)
+    def adicionar_transacao(self, transacao, novo_saldo, limite):
+        self.transacoes.append({
+            'transacao': transacao,
+            'saldo_antigo': self.saldo_antigo,
+            'saldo_atual': novo_saldo,
+            'limite': limite
+        })
+        self.saldo_antigo = novo_saldo
 
-        def saca(self, quantia):
-            if self.saldo - quantia >= 0:
-                self.saldo -= quantia
-                self.historico.registrar_movimento(f"Saque: -{quantia}")
-                self.atualizar_arquivo("Saque", quantia)
-                return True
+    def __str__(self):
+        return '\n'.join(str(transacao) for transacao in self.transacoes)
+
+    def gerar_csv_informacoes(self, nome_arquivo, cliente, conta):
+        with open(nome_arquivo, 'w', newline='') as arquivo_csv:
+            colunas = ['Nome', 'Número da Conta', 'Saldo Antigo', 'Saldo Atual', 'Limite', 'Transacao']
+            escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
+
+            escritor.writeheader()
+            for transacao in self.transacoes:
+                escritor.writerow({
+                    'Nome': cliente.nome,
+                    'Número da Conta': conta.numero,
+                    'Saldo Antigo': transacao['saldo_antigo'],
+                    'Saldo Atual': transacao['saldo_atual'],
+                    'Limite': transacao['limite'],
+                    'Transacao': transacao['transacao']
+                })
+
+    def salvar_em_arquivo(self, nome_arquivo, conteudo):
+        with open(nome_arquivo, 'w') as arquivo:
+            arquivo.write(conteudo)
+
+
+def imprimir_historico(conta):
+    print(f"\nHistórico da Conta {conta.numero}:")
+    nome_arquivo = f"extrato_conta_{conta.numero}.csv"
+    conteudo = f"Saldo Atual: {conta.saldo}\n\nHistórico da Conta {conta.numero}:\n"
+    conteudo += str(conta.historico)
+    conta.historico.salvar_em_arquivo(nome_arquivo, conteudo)
+    print(f"\nDados salvos em {nome_arquivo}")
+
+
+def cadastrar_conta():
+    nome = input("Digite o nome do cliente: ")
+    cpf = input("Digite o CPF do cliente: ")
+    saldo = float(input("Digite o saldo inicial do cliente: "))
+    numero_conta = int(input("Digite o número da conta: "))
+    limite_conta = float(input("Digite o limite da conta: "))
+    cliente = Cliente(nome, cpf, saldo)
+    conta = Conta(cliente, numero_conta, saldo, limite=limite_conta)
+    return conta
+
+
+def imprimir_informacoes(cliente, conta):
+    print("\nInformações do Cliente:")
+    print(f"Nome: {cliente.nome}, CPF: {cliente.cpf}, Saldo Inicial: {cliente.saldo}")
+    print(f"Numero da conta: {conta.numero}, Saldo: {conta.saldo}, Limite: {conta.limite}")
+    print(f"Total Depositado: {conta.total_depositado}")
+    print(f"Total Sacado: {conta.total_sacado}")
+
+def cadastrar_conta(contas):
+    nome = input("Digite o nome do cliente: ")
+    cpf = input("Digite o CPF do cliente: ")
+    saldo = float(input("Digite o saldo inicial do cliente: "))
+    numero_conta = int(input("Digite o número da conta: "))
+    limite_conta = float(input("Digite o limite da conta: "))
+    cliente = Cliente(nome, cpf, saldo)
+    conta = Conta(cliente, numero_conta, saldo, limite=limite_conta)
+    contas.append(conta)  # Adiciona a conta à lista global de contas
+
+def gerar_arquivo_contas(contas):
+    with open("todas_contas.csv", 'w', newline='') as arquivo_csv:
+        colunas = ['Nome', 'Número da Conta', 'Saldo Inicial', 'Limite']
+        escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
+
+        escritor.writeheader()
+        for conta in contas:
+            escritor.writerow({
+                'Nome': conta.cliente.nome,
+                'Número da Conta': conta.numero,
+                'Saldo Inicial': conta.saldo,
+                'Limite': conta.limite
+            })
+
+def gerar_arquivo_transacoes(contas):
+    for conta in contas:
+        nome_arquivo = f"transacoes_conta_{conta.numero}.csv"
+        conta.historico.gerar_csv_informacoes(nome_arquivo, conta.cliente, conta)
+
+def imprimir_informacoes_cliente(contas):
+    with open("informacoes_clientes.csv", 'w', newline='') as arquivo_csv:
+        colunas = ['Nome', 'CPF', 'Saldo Inicial']
+        escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
+
+        escritor.writeheader()
+        for conta in contas:
+            escritor.writerow({
+                'Nome': conta.cliente.nome,
+                'CPF': conta.cliente.cpf,
+                'Saldo Inicial': conta.cliente.saldo
+            })
+
+contas = []
+historico_global = Historico()
+
+while True:
+    print('================MENU===============')
+    print("|  1 - Cadastrar conta            |")
+    print("|  2 - Deposito                   |")
+    print("|  3 - Saque                      |")
+    print("|  4 - Imprimir dados da conta    |")
+    print("|  5 - Sair do programa           |")
+    print("===================================")
+    opcao = input("Escolha uma opção: ")
+
+    if opcao == "1":
+        cadastrar_conta(contas)
+        print("Dados cadastrados com sucesso!")
+    elif opcao == "2" and contas:
+        while True:
+            numero_conta = int(input("Digite o número da conta para depósito: "))
+            conta = next((c for c in contas if c.numero == numero_conta), None)
+            if conta:
+                valor = float(input("Digite o valor a ser depositado: "))
+                conta.depositar(valor)
+                break
             else:
-                print("Saldo insuficiente.")
-                return False
-
-        def atualizar_arquivo(self, operacao, quantia):
-            # Leitura das linhas existentes
-            linhas_existentes = []
-            with open('conta.csv', 'r', newline='') as f:
-                reader = csv.reader(f)
-                linhas_existentes = list(reader)
-
-            # Verifica se o arquivo está vazio e adiciona os rótulos das colunas
-            if not linhas_existentes:
-                linhas_existentes.append(["Numero da Conta", "Nome do Cliente", "Saldo", "Limite", "Deposito", "Saque"])
-
-            # Procura a linha correspondente à conta atual
-            for i, linha in enumerate(linhas_existentes[1:]):  # Pular o cabeçalho
-                dados_conta = linha
-                if dados_conta[0] == str(self.numero):
-                    saldo_atual = float(dados_conta[2])
-                    limite = float(dados_conta[3])
-                    deposito = float(dados_conta[4])
-                    saque = float(dados_conta[5])
-
-                    if operacao == "Deposito":
-                        deposito += quantia
-                    elif operacao == "Saque":
-                        saque += quantia
-
-                    # Atualiza os valores na linha
-                    linhas_existentes[i + 1] = [str(self.numero), self.cliente, str(saldo_atual), str(limite),
-                                                str(deposito), str(saque)]
-                    break
-            else:
-                # Se a conta não foi encontrada, adiciona uma nova linha
-                nova_linha = [str(self.numero), self.cliente, str(self.saldo), str(self.limite), '0', '0']
-                if operacao == "Deposito":
-                    nova_linha[4] = str(quantia)
-                elif operacao == "Saque":
-                    nova_linha[5] = str(quantia)
-
-                linhas_existentes.append(nova_linha)
-
-            # Escreve todas as linhas de volta no arquivo
-            with open('conta.csv', 'w', newline='') as f:
-                writer = csv.writer(f, delimiter=',')
-                writer.writerows(linhas_existentes)
-
-            print(f"Os dados foram atualizados no arquivo 'conta.csv'!")
-
-def menu():
-    clientes = []
-    contas = []
-
-    if not os.path.isfile('conta.csv'):
-        with open('conta.csv', 'w', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow(["Numero da Conta", "Nome do Cliente", "Saldo", "Limite"])
-
-    # Carregar contas do arquivo
-    with open("conta.csv", 'r') as f:
-        reader = csv.reader(f)
-        next(reader)  # Pular cabeçalho
-        for row in reader:
-            numero = int(row[0])
-            cliente_nome = row[1]
-            saldo = float(row[2])
-            limite = float(row[3])
-            conta = Conta(numero, cliente_nome, saldo, limite)
-            contas.append(conta)
-
-    while True:
-        print('==================MENU================')
-        print('|  1 - Inserir dados do cliente      |')
-        print("|  2 - Associar cliente a uma conta  |")
-        print("|  3 - Imprimir dados do cliente     |")
-        print("|  4 - Imprimir dados da conta       |")
-        print("|  5 - Depositar                     |")
-        print("|  6 - Sacar                         |")
-        print("|  7 - Sair do programa              |")
-        print("======================================")
-
-        op = int(input("Digite uma opcao: "))
-        if op == 1:
-            nome = input("Digite o nome: ")
-            cpf = input("Digite o CPF: ")
-            cliente = Cliente(nome, cpf)
-            clientes.append(cliente)
-            cliente.grava()
-        elif op == 2:
-            numero = int(input('Qual o numero da conta? '))
-            saldo = float(input("Qual o saldo? "))
-            limite = float(input('Qual o limite? '))
-
-            # Verificar se existem clientes para associar à conta
-            if clientes:
-                print("Clientes disponíveis:")
-                for i, cliente in enumerate(clientes, 1):
-                    print(f"{i}. {cliente.nome}")
-
-                escolha_cliente = int(input("Escolha o número do cliente para associar à conta (ou 0 para nenhum): "))
-
-                if escolha_cliente > 0 and escolha_cliente <= len(clientes):
-                    cliente_associado = clientes[escolha_cliente - 1]
-                    conta = Conta(numero, cliente_associado, saldo, limite)
-                else:
-                    conta = Conta(numero, None, saldo,
-                                  limite)  # None indica que a conta não está associada a um cliente
-            else:
-                conta = Conta(numero, None, saldo, limite)  # None indica que a conta não está associada a um cliente
-
-            contas.append(conta)
-            conta.grava()
-        elif op == 3:
-            for cliente in clientes:
-                cliente.ler()
-        elif op == 4:
-            for conta in contas:
-                conta.ler()
-        elif op == 5:
-            numero_conta_destino = int(input('Digite o número da conta de destino: '))
-            quantia = float(input('Digite a quantia a ser depositada: '))
-
-            conta_destino = None
-
-            # Encontrar a conta de destino
-            for conta in contas:
-                if conta.numero == numero_conta_destino:
-                    conta_destino = conta
-
-            if conta_destino:
-                conta_destino.deposita(quantia, conta)
-                print("Depósito realizado com sucesso.")
-            else:
-                print("Conta de destino não encontrada.")
-
-
-        elif op == 6:
-            numero_conta = int(input('Digite o número da conta para sacar: '))
-            quantia = float(input('Digite a quantia a ser sacada: '))
-            for conta in contas:
-                if conta.numero == numero_conta:
-                    if conta.saca(quantia):
-                        print("Saque realizado com sucesso.")
-                    else:
-                        print("Saque não realizado.")
-                    break
-            else:
-                print("Conta não encontrada.")
-        elif op == 7:
-            break
-
-menu()
+                print("Conta não encontrada. Por favor, digite um número de conta válido.")
+    elif opcao == "3" and contas:
+        numero_conta = int(input("Digite o número da conta para saque: "))
+        valor = float(input("Digite o valor a ser sacado: "))
+        conta = next((c for c in contas if c.numero == numero_conta), None)
+        if conta:
+            conta.sacar(valor)
+        else:
+            print("Conta não encontrada.")
+    elif opcao == "4" and contas:
+        numero_conta = int(input("Digite o número da conta para imprimir informações: "))
+        conta = next((c for c in contas if c.numero == numero_conta), None)
+        if conta:
+            imprimir_informacoes(conta.cliente, conta)
+            imprimir_historico(conta)
+        else:
+            print("Conta não encontrada.")
+    elif opcao == "5":
+        gerar_arquivo_contas(contas)
+        gerar_arquivo_transacoes(contas)
+        imprimir_informacoes_cliente(contas)
+        print("Saindo do programa...")
+        break
+    else:
+        print("Opção inválida ou nenhuma conta cadastrada. Tente novamente.")
