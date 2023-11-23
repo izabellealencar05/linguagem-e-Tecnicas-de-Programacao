@@ -51,13 +51,14 @@ class Historico:  # cria a classe Historico
     def __str__(self):  # criando um método para retornar em string, com o parametro 'self' como referencia a instancia da classe
         return '\n'.join(str(transacao) for transacao in self.transacoes) #Define o método especial __str__ para a classe Historico, retornando uma representação em string do histórico, mostrando cada transação em uma nova linha.
 
-    def gerar_csv_informacoes(self, nome_arquivo, cliente, conta):
-        with open(nome_arquivo, 'w', newline='') as arquivo_csv:
-            colunas = ['Nome', 'Número da Conta', 'Saldo Atual', 'Limite', 'Transacao']
+    def gerar_csv_informacoes(self, nome_arquivo, cliente, conta): #cria um metodo com os parametros: self, nome_arquivo, cliente, conta
+        with open(nome_arquivo, 'w', newline='') as arquivo_csv: #abre um arquivo CSV
+            colunas = ['Nome', 'Número da Conta', 'Saldo Atual', 'Limite', 'Transacao'] #formatando as colunas
             escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
 
-            escritor.writeheader()
+            escritor.writeheader() #escreve a linha do cabecalho
             for transacao in self.transacoes:
+                #escreve em cada linha:
                 escritor.writerow({
                     'Nome': cliente.nome,
                     'Número da Conta': conta.numero,
@@ -66,49 +67,51 @@ class Historico:  # cria a classe Historico
                     'Transacao': transacao['transacao']
                 })
 
-    def salvar_em_arquivo(self, nome_arquivo, conteudo):
-        with open(nome_arquivo, 'w') as arquivo:
-            arquivo.write(conteudo)
+    def salvar_em_arquivo(self, nome_arquivo, conteudo): #cria o metodo com os parametros: self, nome_arquivo, conteudo
+        with open(nome_arquivo, 'w') as arquivo: #abre o arquivo, na formato para escrever, ent permite escrever dentro do arquivo
+            arquivo.write(conteudo) #escreve o conteudo do arquivo
 
 
 
 
-def cadastrar_conta():
-    nome = input("Digite o nome do cliente: ")
-    cpf = input("Digite o CPF do cliente: ")
-    saldo = float(input("Digite o saldo inicial do cliente: "))
-    numero_conta = int(input("Digite o número da conta: "))
-    limite_conta = float(input("Digite o limite da conta: "))
-    cliente = Cliente(nome, cpf, saldo)
-    conta = Conta(cliente, numero_conta, saldo, limite=limite_conta)
-    return conta
+def cadastrar_conta(): #cria uma funcao sem parametros
+    nome = input("Digite o nome do cliente: ") #pede ao usuario para informar o nome
+    cpf = input("Digite o CPF do cliente: ") #pede o cpf
+    saldo = float(input("Digite o saldo inicial do cliente: ")) #pede o saldo
+    numero_conta = int(input("Digite o número da conta: ")) #pede o numero da conta
+    limite_conta = float(input("Digite o limite da conta: ")) #pede o limite da conta
+    cliente = Cliente(nome, cpf, saldo) #xcria um objeto da classe Cliente com as informacoes fornecidads pelo usario
+    conta = Conta(cliente, numero_conta, saldo, limite=limite_conta) #cria um objeto  Conta associado a esse cliente
+    return conta #retorna o objeto conta
 
 
-def imprimir_informacoes(cliente, conta):
-    print("\nInformações do Cliente:")
-    print(f"Nome: {cliente.nome}, CPF: {cliente.cpf}")
-    print(f"Numero da conta: {conta.numero}")
-    print(f"Saldo: {conta.saldo}")
-    print(f"Limite: {conta.limite}")
-    print(f"Total Depositado: {conta.total_depositado}")
-    print(f"Total Sacado: {conta.total_sacado}")
+def imprimir_informacoes(cliente, conta): #cria a funcao com os parametros cliente e conta que sao objetos das classes Clientes e Conta
+    print("\nInformações do Cliente:") #printa na tela a frase
+    print(f"Nome: {cliente.nome}, CPF: {cliente.cpf}") #printa na tela o nome e o cpf o cliente
+    print(f"Numero da conta: {conta.numero}") #printa na tela o numero da conta
+    print(f"Saldo: {conta.saldo}") #printa na tela o saldo
+    print(f"Limite: {conta.limite}") #printa na tela o limite
+    print(f"Total Depositado: {conta.total_depositado}") #printa na tela o total depositado
+    print(f"Total Sacado: {conta.total_sacado}") #printa na tela o total sacado
 
-def cadastrar_conta(contas):
-    nome = input("Digite o nome do cliente: ")
-    cpf = input("Digite o CPF do cliente: ")
-    numero_conta = int(input("Digite o número da conta: "))
-    saldo = float(input("Digite o saldo do cliente: "))
-    limite_conta = float(input("Digite o limite da conta: "))
-    cliente = Cliente(nome, cpf, saldo)
-    conta = Conta(cliente, numero_conta, saldo, limite=limite_conta)
-    contas.append(conta)
-def gerar_arquivo_contas(contas):
-    with open("infoContas", 'w', newline='') as arquivo_csv:
+def cadastrar_conta(contas): #cria a funcao como parametro a lista de contas
+    nome = input("Digite o nome do cliente: ") #pede ao usuario que informe o nome
+    cpf = input("Digite o CPF do cliente: ") #pede ao usuario que informe o cpf
+    numero_conta = int(input("Digite o número da conta: ")) #pede ao usuario que informe o numero da conta
+    saldo = float(input("Digite o saldo do cliente: ")) #pede ao usuario que informe o saldo
+    limite_conta = float(input("Digite o limite da conta: ")) #pede ao usuario que informe o limite
+    cliente = Cliente(nome, cpf, saldo) #cria um objeto da classe com as infos que o usuario digitou
+    conta = Conta(cliente, numero_conta, saldo, limite=limite_conta) #cria um objeto da classe Conta com as infos fornecidas pelo usuario
+    contas.append(conta) #adiciona a conta à lista de contas
+def gerar_arquivo_contas(contas): #cria a funcao como parametro a lista contas
+    with open("infoContas", 'w', newline='') as arquivo_csv: #abre o arquivo
+        #formatando o arquivo
         colunas = ['Nome', 'Número da Conta', 'Saldo', 'Limite']
         escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
 
-        escritor.writeheader()
-        for conta in contas:
+        escritor.writeheader() #escreve o cabecalho
+        for conta in contas: #inicia o loop
+            #para cada conta escreve uma linha no arquivo
             escritor.writerow({
                 'Nome': conta.cliente.nome,
                 'Número da Conta': conta.numero,
