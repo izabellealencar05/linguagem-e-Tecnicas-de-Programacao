@@ -49,8 +49,7 @@ class Historico:  # cria a classe Historico
         })
 
     def __str__(self):  # criando um método para retornar em string, com o parametro 'self' como referencia a instancia da classe
-        return '\n'.join(str(transacao) for transacao in self.transacoes) #criar uma string que contém cada transação em uma nova linha. join é usado para concatenar todas essas strings, separando-as com a sequência de escape de nova linha ('\n').
-
+        return '\n'.join(str(transacao) for transacao in self.transacoes) #Define o método especial __str__ para a classe Historico, retornando uma representação em string do histórico, mostrando cada transação em uma nova linha.
 
     def gerar_csv_informacoes(self, nome_arquivo, cliente, conta):
         with open(nome_arquivo, 'w', newline='') as arquivo_csv:
@@ -165,27 +164,26 @@ while True: #iniciando o loop
             else: #se a conta nao existir
                 print("Conta não encontrada. Por favor, digite um número de conta válido.") #printa na tela essa frase e retorna a perugnta inicial do loop
 
-    elif opcao == "3" and contas: 
-        numero_conta = int(input("Digite o número da conta para saque: "))
-        valor = float(input("Digite o valor a ser sacado: "))
-        conta = next((c for c in contas if c.numero == numero_conta), None)
-        if conta:
-            conta.sacar(valor)
-        else:
-            print("Conta não encontrada.")
-    elif opcao == "4" and contas:
-        numero_conta = int(input("Digite o número da conta para imprimir informações: "))
-        conta = next((c for c in contas if c.numero == numero_conta), None)
-        if conta:
-            imprimir_informacoes(conta.cliente, conta)
-
-        else:
-            print("Conta não encontrada.")
-    elif opcao == "5":
-        gerar_arquivo_contas(contas)
-        gerar_arquivo_transacoes(contas)
-        imprimir_informacoes_cliente(contas)
-        print("Saindo do programa...")
-        break
-    else:
-        print("Opção inválida ou nenhuma conta cadastrada. Tente novamente.")
+    elif opcao == "3" and contas: #se a opcao for igual a 3 e existir contas cadastradas
+        numero_conta = int(input("Digite o número da conta para saque: ")) #declara a variavel numero_conta para o usuario poder digitar o numero da conta para o saque
+        valor = float(input("Digite o valor a ser sacado: ")) #declara a variavel valor para o usuario digitar o valor que deseja sacar
+        conta = next((c for c in contas if c.numero == numero_conta), None) #procura se a conta com o numero informado existe
+        if conta: #se a conta existe
+            conta.sacar(valor) #chama o metodo 'sacar' da classe Conta para realizar o saque
+        else: #se a conta nao existe
+            print("Conta não encontrada.") #printa na teka que a conta nao foi encontrada
+    elif opcao == "4" and contas: #se a opcao for igual a 4 e existir contas cadastradas
+        numero_conta = int(input("Digite o número da conta para imprimir informações: ")) #declara a variavel 'numero_conta' para o usuario indicar qual conta deseja ver as informacoes
+        conta = next((c for c in contas if c.numero == numero_conta), None) #procura se existe a conta informada
+        if conta: #se a conta existe
+            imprimir_informacoes(conta.cliente, conta) #chama a funcao 'imprimir_informacoes' para mostrar as informacoes
+        else: #senao
+            print("Conta não encontrada.") #printa na tela que a conta nao foi encontrada
+    elif opcao == "5": #se a opcao for igual a 5
+        gerar_arquivo_contas(contas) #cria o aquivo referente as informacoes das contas criadas
+        gerar_arquivo_transacoes(contas) #cria arquivo referente as transacoes das contas criadas
+        imprimir_informacoes_cliente(contas) #imprime informacoes do cliente da classe conta
+        print("Saindo do programa...") #printa na tela a frase
+        break #fecha o lopp
+    else: #senao
+        print("Opção inválida ou nenhuma conta cadastrada. Tente novamente.") #printa na tela a frase, e volta para o menu
