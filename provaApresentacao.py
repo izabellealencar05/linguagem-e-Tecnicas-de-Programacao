@@ -116,18 +116,19 @@ def gerar_arquivo_contas(contas):
                 'Limite': conta.limite
             })
 
-def gerar_arquivo_transacoes(contas):
-    for conta in contas:
-        nome_arquivo = f"transacoes_conta_{conta.numero}.csv"
-        conta.historico.gerar_csv_informacoes(nome_arquivo, conta.cliente, conta)
+def gerar_arquivo_transacoes(contas): #cria a funcao que recebe contas como parametrof
+    for conta in contas: #inicia um loop que itera sobre cada conta na lista de contas
+        nome_arquivo = f"transacoes_conta_{conta.numero}.csv" #variael com o nome do arquivo
+        conta.historico.gerar_csv_informacoes(nome_arquivo, conta.cliente, conta) #chama o metodo
 
-def imprimir_informacoes_cliente(contas):
-    with open("informacoes_clientes.csv", 'w', newline='') as arquivo_csv:
-        colunas = ['Nome', 'CPF', 'Saldo']
+def imprimir_informacoes_cliente(contas): #criando uma funcao para imprimir infos dos clientes associados com a lista de contas como parametro
+    with open("informacoes_clientes.csv", 'w', newline='') as arquivo_csv: #abrindo o arquivo CSV
+        colunas = ['Nome', 'CPF', 'Saldo'] #cria uma lista que contem os nomes de cada coluna para ser escrito no arquivo csv
         escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
 
-        escritor.writeheader()
-        for conta in contas:
+        escritor.writeheader() #escreve a linha do cabecalho
+        for conta in contas: #cria um loop que itera sobre cada conta na lista de contas
+            #cada linha escreve:
             escritor.writerow({
                 'Nome': conta.cliente.nome,
                 'CPF': conta.cliente.cpf,
