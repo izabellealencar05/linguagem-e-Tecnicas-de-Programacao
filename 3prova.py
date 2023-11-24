@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 
 
 class Cliente:
@@ -17,21 +18,23 @@ class Conta:
         self.historico = Historico()
         self.total_depositado = 0
         self.total_sacado = 0
+        self.data_abertura = datetime.now()
 
     def depositar(self, valor):
-        if self.saldo + valor <= self.limite:
-            self.saldo += valor
-            self.historico.adicionar_transacao(f'Depósito: +{valor}', self.saldo, self.limite)
-            self.cliente.saldo = self.saldo
-            self.total_depositado += valor
-            print("Valor depositado com sucesso!")
-        else:
-            print("Erro! Limite de saldo é menor")
+        self.saldo += valor
+        self.historico.adicionar_transacao(
+            f'Depósito: +{valor}', self.saldo, self.limite, datetime.now()
+        )
+        self.cliente.saldo = self.saldo
+        self.total_depositado += valor
+        print("Valor depositado com sucesso!")
 
     def sacar(self, valor):
         if self.saldo - valor >= -self.limite:
             self.saldo -= valor
-            self.historico.adicionar_transacao(f'Saque: -{valor}', self.saldo, self.limite)
+            self.historico.adicionar_transacao(
+                f'Saque: -{valor}', self.saldo, self.limite, datetime.now()
+            )
             self.cliente.saldo = self.saldo
             self.total_sacado += valor
             print("Valor sacado com sucesso!")
@@ -43,20 +46,20 @@ class Historico:
     def __init__(self):
         self.transacoes = []
 
-    def adicionar_transacao(self, transacao, novo_saldo, limite):
+    def adicionar_transacao(self, transacao, novo_saldo, limite, data):
         self.transacoes.append({
             'transacao': transacao,
             'saldo_atual': novo_saldo,
-            'limite': limite
+            'limite': limite,
+            'data': data  # Added transaction date
         })
-
 
     def __str__(self):
         return '\n'.join(str(transacao) for transacao in self.transacoes)
 
     def gerar_csv_informacoes(self, nome_arquivo, cliente, conta):
         with open(nome_arquivo, 'w', newline='') as arquivo_csv:
-            colunas = ['Nome', 'Número da Conta', 'Saldo Atual', 'Limite', 'Transacao']
+            colunas = ['Nome', 'Número da Conta', 'Saldo Atual', 'Limite', 'Transacao', 'Data']
             escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
 
             escritor.writeheader()
@@ -66,13 +69,13 @@ class Historico:
                     'Número da Conta': conta.numero,
                     'Saldo Atual': transacao['saldo_atual'],
                     'Limite': transacao['limite'],
-                    'Transacao': transacao['transacao']
+                    'Transacao': transacao['transacao'],
+                    'Data': transacao['data']  # Added line for transaction date
                 })
 
     def salvar_em_arquivo(self, nome_arquivo, conteudo):
         with open(nome_arquivo, 'w') as arquivo:
             arquivo.write(conteudo)
-
 
 
 
@@ -120,10 +123,22 @@ def gerar_arquivo_contas(contas):
             })
 
 def gerar_arquivo_transacoes(contas):
-    for conta in contas:
-        nome_arquivo = f"transacoes_conta_{conta.numero}.csv"
-        conta.historico.gerar_csv_informacoes(nome_arquivo, conta.cliente, conta)
+    nome_arquivo = "transacoes_todas_contas.csv"
+    with open(nome_arquivo, 'w', newline='') as arquivo_csv:
+        colunas = ['Nome', 'Número da Conta', 'Saldo Atual', 'Limite', 'Transacao', 'Data']
+        escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
+        escritor.writeheader()
 
+        for conta in contas:
+            for transacao in conta.historico.transacoes:
+                escritor.writerow({
+                    'Nome': conta.cliente.nome,
+                    'Número da Conta': conta.numero,
+                    'Saldo Atual': transacao['saldo_atual'],
+                    'Limite': transacao['limite'],
+                    'Transacao': transacao['transacao'],
+                    'Data': transacao['data']
+                })
 def imprimir_informacoes_cliente(contas):
     with open("informacoes_clientes.csv", 'w', newline='') as arquivo_csv:
         colunas = ['Nome', 'CPF', 'Saldo']
