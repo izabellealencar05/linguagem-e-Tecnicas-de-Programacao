@@ -51,7 +51,7 @@ class Historico:
             'transacao': transacao,
             'saldo_atual': novo_saldo,
             'limite': limite,
-            'data': data  # Added transaction date
+            'data': data  
         })
 
     def __str__(self):
@@ -70,7 +70,7 @@ class Historico:
                     'Saldo Atual': transacao['saldo_atual'],
                     'Limite': transacao['limite'],
                     'Transacao': transacao['transacao'],
-                    'Data': transacao['data']  # Added line for transaction date
+                    'Data': transacao['data'] 
                 })
 
     def salvar_em_arquivo(self, nome_arquivo, conteudo):
