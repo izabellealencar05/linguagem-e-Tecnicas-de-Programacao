@@ -19,25 +19,25 @@ class Conta: #criando outra classe, agr para Conta
         self.data_abertura = datetime.now()
 
 
-    def depositar(self, valor):
-        self.saldo += valor
-        self.historico.adicionar_transacao(
+    def depositar(self, valor): #criando metodo com parametros: self, valor
+        self.saldo += valor #acrescentando o valor do deposito no saldo
+        self.historico.adicionar_transacao( #registrando as informacoes da transacao
             f'Deposito: +{valor}', self.saldo, self.limite, datetime.now()
         )
-        self.cliente.saldo = self.saldo
-        self.total_depositado += valor
-        print("Valor depositado com sucesso!")
+        self.cliente.saldo = self.saldo #atualiza o saldo
+        self.total_depositado += valor #atualiza o deposito
+        print("Valor depositado com sucesso!") #imprime na tela
 
-    def sacar(self, valor):
-        if self.saldo - valor >= -self.limite:
-            self.saldo -= valor
-            self.historico.adicionar_transacao(
+    def sacar(self, valor): #criando o metodo com os parametros: self, valor
+        if self.saldo - valor >= -self.limite: #verifica se o saldo eh menor que o limite
+            self.saldo -= valor #diminui o valor do saldo
+            self.historico.adicionar_transacao( #registrando as infos da transacao
                 f'Saque: -{valor}', self.saldo, self.limite, datetime.now()
             )
-            self.cliente.saldo = self.saldo
-            self.total_sacado += valor
+            self.cliente.saldo = self.saldo #atualiza o valor do saldo
+            self.total_sacado += valor #atualiza o valor do saque
             print("Valor sacado com sucesso!")
-        else:
+        else: 
             print("Erro! Limite de saque excedido")
 
 
@@ -56,9 +56,9 @@ class Historico:  # cria a classe Historico
     def __str__(self):  # criando um método para retornar em string, com o parametro 'self' como referencia a instancia da classe
         return '\n'.join(str(transacao) for transacao in self.transacoes) #Define o método especial __str__ para a classe Historico, retornando uma representação em string do histórico, mostrando cada transação em uma nova linha.
 
-    def gerar_arquivo_transacoes(contas):
+    def gerar_arquivo_transacoes(contas): #metodo criando um arquivo csv das transacoes da conta
         nome_arquivo = "transacoes_todas_contas.csv"
-        with open(nome_arquivo, 'a', newline='') as arquivo_csv:
+        with open(nome_arquivo, 'a', newline='') as arquivo_csv: #formatando as linhas e as colunas do arquivo
             colunas = ['Nome', 'Numero da Conta', 'Saldo Atual', 'Limite', 'Transacao', 'Data']
             escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
             escritor.writeheader()
