@@ -19,12 +19,12 @@ class Conta: #criando outra classe, agr para Conta
         self.data_abertura = datetime.now()
 
 
-    def depositar(self, valor): #criando um metodo para deposito, com parametros self, valor
-        self.saldo += valor #acrescentando o valor do deposito no saldo
+    def depositar(self, valor):
+        self.saldo += valor
         self.historico.adicionar_transacao(
             f'Deposito: +{valor}', self.saldo, self.limite, datetime.now()
         )
-        self.cliente.saldo = self.saldo #
+        self.cliente.saldo = self.saldo
         self.total_depositado += valor
         print("Valor depositado com sucesso!")
 
@@ -56,11 +56,12 @@ class Historico:  # cria a classe Historico
     def __str__(self):  # criando um método para retornar em string, com o parametro 'self' como referencia a instancia da classe
         return '\n'.join(str(transacao) for transacao in self.transacoes) #Define o método especial __str__ para a classe Historico, retornando uma representação em string do histórico, mostrando cada transação em uma nova linha.
 
-    def gerar_arquivo_transacoes(cls, contas):
+    def gerar_arquivo_transacoes(contas):
         nome_arquivo = "transacoes_todas_contas.csv"
         with open(nome_arquivo, 'a', newline='') as arquivo_csv:
             colunas = ['Nome', 'Numero da Conta', 'Saldo Atual', 'Limite', 'Transacao', 'Data']
             escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
+            escritor.writeheader()
 
             for conta in contas:
                 for transacao in conta.historico.transacoes:
@@ -72,11 +73,11 @@ class Historico:  # cria a classe Historico
                         'Transacao': transacao['transacao'],
                         'Data': transacao['data']
                     })
+    def salvar_em_arquivo(self, nome_arquivo, conteudo): #cria o metodo com os parametros: self, nome_arquivo, conteudo
+        with open(nome_arquivo, 'a') as arquivo: #abre o arquivo, na formato para escrever, ent permite escrever dentro do arquivo
+            arquivo.write(conteudo) #escreve o conteudo do arquivo
 
 
-    def salvar_em_arquivo(nome_arquivo, conteudo):
-        with open(nome_arquivo, 'a') as arquivo:
-            arquivo.write(conteudo)
 
 
 def cadastrar_conta(): #cria uma funcao sem parametros
@@ -108,22 +109,24 @@ def cadastrar_conta(contas): #cria a funcao como parametro a lista de contas
     cliente = Cliente(nome, cpf, saldo) #cria um objeto da classe com as infos que o usuario digitou
     conta = Conta(cliente, numero_conta, saldo, limite=limite_conta) #cria um objeto da classe Conta com as infos fornecidas pelo usuario
     contas.append(conta) #adiciona a conta à lista de contas
-def gerar_arquivo_contas(contas):
-    with open("infoContas.csv", 'a', newline='') as arquivo_csv:
-        colunas = ['Nome', 'Número da Conta', 'Saldo', 'Limite']
+def gerar_arquivo_contas(contas): #cria a funcao como parametro a lista contas
+    with open("infoContas", 'a', newline='') as arquivo_csv: #abre o arquivo
+        #formatando o arquivo
+        colunas = ['Nome', 'Numero da Conta', 'Saldo', 'Limite']
         escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
 
-        for conta in contas:
+        escritor.writeheader() #escreve o cabecalho
+        for conta in contas: #inicia o loop
+            #para cada conta escreve uma linha no arquivo
             escritor.writerow({
                 'Nome': conta.cliente.nome,
                 'Numero da Conta': conta.numero,
                 'Saldo': conta.saldo,
                 'Limite': conta.limite
             })
-
 def gerar_arquivo_transacoes(contas):
     nome_arquivo = "transacoes_todas_contas.csv"
-    with open(nome_arquivo, 'w', newline='') as arquivo_csv:
+    with open(nome_arquivo, 'a', newline='') as arquivo_csv:
         colunas = ['Nome', 'Numero da Conta', 'Saldo Atual', 'Limite', 'Transacao', 'Data']
         escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
         escritor.writeheader()
@@ -143,17 +146,21 @@ def gerar_arquivo_transacoes(contas):
 # Pois agora, as transações são diretamente consolidadas na função gerar_arquivo_transacoes
 
 
-def imprimir_informacoes_cliente(contas):
-    with open("informacoes_clientes.csv", 'a', newline='') as arquivo_csv:
-        colunas = ['Nome', 'CPF', 'Saldo']
+def imprimir_informacoes_cliente(contas): #criando uma funcao para imprimir infos dos clientes associados com a lista de contas como parametro
+    with open("informacoes_clientes.csv", 'a', newline='') as arquivo_csv: #abrindo o arquivo CSV
+        colunas = ['Nome', 'CPF', 'Saldo'] #cria uma lista que contem os nomes de cada coluna para ser escrito no arquivo csv
         escritor = csv.DictWriter(arquivo_csv, fieldnames=colunas)
 
-        for conta in contas:
+        escritor.writeheader() #escreve a linha do cabecalho
+        for conta in contas: #cria um loop que itera sobre cada conta na lista de contas
+            #cada linha escreve:
             escritor.writerow({
                 'Nome': conta.cliente.nome,
                 'CPF': conta.cliente.cpf,
                 'Saldo': conta.cliente.saldo
             })
+
+
 contas = [] #cria uma lista vazia para armazenar contas
 historico_global = Historico() #cria uma instancia da classe Historico para manter  um historico global de transacoes
 
