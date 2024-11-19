@@ -1,0 +1,61 @@
+/* Estilização geral da div container */
+.container-historico {
+    width: 100%;
+    max-width: 900px; /* Limita a largura máxima da div */
+    margin: 20px auto; /* Centraliza no meio da página */
+    padding: 20px;
+    background-color: #ffffff; /* Fundo branco */
+    border: 1px solid #ddd; /* Borda sutil */
+    border-radius: 10px; /* Cantos arredondados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra para destaque */
+    display: flex;
+    flex-direction: column; /* Alinha os elementos verticalmente */
+    align-items: center; /* Centraliza o conteúdo horizontalmente */
+    text-align: center; /* Centraliza o texto */
+}
+.container-historico h2 {
+    font-size: 2rem;
+    margin: 0; /* Remove margens extras */
+    color: #333; /* Texto escuro */
+    text-align: center;
+    width: 100%; /* Garante que ocupe toda a largura do container */
+    border-bottom: 2px solid #ddd; /* Linha abaixo do título */
+    padding-bottom: 10px; /* Espaço entre o texto e a linha */
+    margin-bottom: 20px; /* Espaço entre o título e o restante do conteúdo */
+}
+.container-historico p {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    color: #555; /* Texto cinza */
+    margin-bottom: 20px;
+}
+
+.estatisticas-antes{
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
+    margin: 10px auto;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.estatisticas-depois{
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
+    margin: 10px auto;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.desempenho{
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
+    margin: 10px auto;
+    padding: 5px;
+    border-radius: 5px;
+}
