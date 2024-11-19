@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulação de Batalhas</title>
+    <!-- Links para os estilos -->
+    <link rel="stylesheet" href="/menu/css/base.css">
+    <link rel="stylesheet" href="/menu/css/batalhas.css">
+    <link rel="stylesheet" href="/menu/css/resultado_batalhas.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <h1>Pyradigmas</h1>
+    </header>
+
+    <!-- Menu de Navegação -->
+    <nav id="menu-container"></nav>
+
+    <!-- Conteúdo Principal -->
+    <main>
+        <section>
+            <h2>Simulação de Batalhas</h2>
+            <form id="form-simulacao-batalha" class="form-batalha">
+                <div class="heroi-container">
+                    <!-- Herói 1 -->
+                    <div class="heroi">
+                        <label for="heroi1">Herói 1:</label>
+                        <select id="heroi1" name="heroi1" required>
+                            <option value="">Selecione o Herói 1</option>
+                        </select>
+                        <fieldset>
+                            <legend>Fatores Aleatórios - Herói 1</legend>
+                            <label><input type="checkbox" name="fatores_aleatorios_1" value="fora_de_forma"> Fora de Forma</label>
+                            <label><input type="checkbox" name="fatores_aleatorios_1" value="entorpecentes"> Uso de Entorpecentes</label>
+                            <label><input type="checkbox" name="fatores_aleatorios_1" value="outra_luta"> Acabou de Sair de Outra Luta</label>
+                            <label><input type="checkbox" name="fatores_aleatorios_1" value="doente"> Está Doente</label>
+                            <label><input type="checkbox" name="fatores_aleatorios_1" value="sono"> Está Com Sono</label>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Fatores Estratégicos - Herói 1</legend>
+                            <label><input type="checkbox" name="fatores_estrategicos_1" value="pilula_inteligencia"> Pílula de Super-Inteligência</label>
+                            <label><input type="checkbox" name="fatores_estrategicos_1" value="conhece_fraqueza"> Conhece Fraqueza do Adversário</label>
+                            <label><input type="checkbox" name="fatores_estrategicos_1" value="refem"> Ente Querido do Adversário de Refém</label>
+                        </fieldset>
+                    </div>
+                    <!-- Herói 2 -->
+                    <div class="heroi">
+                        <label for="heroi2">Herói 2:</label>
+                        <select id="heroi2" name="heroi2" required>
+                            <option value="">Selecione o Herói 2</option>
+                        </select>
+                        <fieldset>
+                            <legend>Fatores Aleatórios - Herói 2</legend>
+                            <label><input type="checkbox" name="fatores_aleatorios_2" value="fora_de_forma"> Fora de Forma</label>
+                            <label><input type="checkbox" name="fatores_aleatorios_2" value="entorpecentes"> Uso de Entorpecentes</label>
+                            <label><input type="checkbox" name="fatores_aleatorios_2" value="outra_luta"> Acabou de Sair de Outra Luta</label>
+                            <label><input type="checkbox" name="fatores_aleatorios_2" value="doente"> Está Doente</label>
+                            <label><input type="checkbox" name="fatores_aleatorios_2" value="sono"> Está Com Sono</label>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Fatores Estratégicos - Herói 2</legend>
+                            <label><input type="checkbox" name="fatores_estrategicos_2" value="pilula_inteligencia"> Pílula de Super-Inteligência</label>
+                            <label><input type="checkbox" name="fatores_estrategicos_2" value="conhece_fraqueza"> Conhece Fraqueza do Adversário</label>
+                            <label><input type="checkbox" name="fatores_estrategicos_2" value="refem"> Ente Querido do Adversário de Refém</label>
+                        </fieldset>
+                    </div>
+                </div>
+                <button type="submit">Iniciar Batalha</button>
+            </form>
+        </section>
+
+        <div class="container-historico">
+            <!-- Resultado da Batalha -->
+            <section id="resultado-batalha" style="display: none;">
+                <h2>Resultado da Batalha</h2>
+                <p id="mensagem-resultado"></p>
+            </section>
+
+            <!-- Estatísticas da Batalha -->
+            <section id="estatisticas-batalha" style="display: none;">
+                <!-- Estatísticas serão carregadas aqui -->
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Pyradigmas. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="menu/carregar_menu.js"></script>
+    <script src="/menu/js/simular_batalha.js" defer></script>
+</body>
+
+</html>
